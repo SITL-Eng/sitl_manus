@@ -8,7 +8,7 @@
 #include <vector>
 #include "ros/ros.h"
 #include "geometry_msgs/Transform.h"
-#include "manus/glove.h"
+#include "sitl_manus/glove.h"
 
 // Need to link with Ws2_32.lib, Mswsock.lib, and Advapi32.lib
 #pragma comment (lib, "Ws2_32.lib")
@@ -36,7 +36,7 @@ int __cdecl main(int argc, char **argv)
     ros::init(argc, argv, "pub_manus_glove");
     ros::NodeHandle n;
     ros::Publisher tf_pub = n.advertise<geometry_msgs::Transform>("/manus/tf", 1000);
-    ros::Publisher glove_pub  = n.advertise<manus::glove>("/manus/cp", 1000);
+    ros::Publisher glove_pub  = n.advertise<sitl_manus::glove>("/manus/cp", 1000);
     // ros::Publisher glove_node2_pub  = n.advertise<geometry_msgs::TransformStamped>("/manus/node2/cp", 1000);
     // ros::Publisher glove_node3_pub  = n.advertise<geometry_msgs::TransformStamped>("/manus/node3/cp", 1000);
     // ros::Publisher glove_node4_pub  = n.advertise<geometry_msgs::TransformStamped>("/manus/node4/cp", 1000);
@@ -122,7 +122,7 @@ int __cdecl main(int argc, char **argv)
     std::vector<float> receivedFloatVector(119);
     size_t vectorSize=119;
     geometry_msgs::Transform tf;
-    manus::glove msg;
+    sitl_manus::glove msg;
 
     // Receive until the peer closes the connection
     do {

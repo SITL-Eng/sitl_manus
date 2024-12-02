@@ -182,19 +182,16 @@ class node_tracker():
         self.index_base.data[6] = base_index.data[6]
         
     ###TO OBTAIN THE ROTATION BETWEEN TWO QUAT
-    def callback_index_base(self,q_rel_base_index):
-        q1 =Quaternion( x=q_rel_base_index.data[0],y= q_rel_base_index.data[1], z=q_rel_base_index.data[2], w=q_rel_base_index.data[3])
-        # Convert the quaternion to a rotation matrix
-        R = q1.rotation_matrix
-        # Extract the elements related to the y-axis rotation
-        R11 = R[0, 0]
-        R31 = R[2, 0]
-        # Compute the rotation angle theta around the y-axis
-        theta = np.arctan2(R31, R11)
-        # Construct the quaternion for the y-axis rotation
-        qw = np.cos(theta / 2)
-        qy = np.sin(theta / 2)
-        self.rel_base_index = Quaternion(w=qw, x=0, y=qy, z=0)   
+    def callback_index_relq(self,q_rel):
+        self.rel_base_index = Quaternion(w=q_rel.data[3], x=q_rel.data[0], y=q_rel.data[1], z=q_rel.data[2]).normalised
+        q1 = Quaternion(axis=[0, 1, 0], angle=math.radians(-45)).normalised
+        self.rel_base_index = self.rel_base_index.inverse
+        
+        self.rel_base_index *= q1 
+        
+
+
+
 
 ###########################################################
 
@@ -217,7 +214,7 @@ if __name__ == '__main__':
     rospy.Subscriber("glove/left/real", BoolStamped, app.callback_real)
     rospy.Subscriber("index_tip_pose",Float64MultiArray,app.callback_index)
     rospy.Subscriber("index_base_pose",Float64MultiArray,app.callback_index_base_pose)
-    rospy.Subscriber("index_tip_relq",Float64MultiArray,app.callback_index_base)
+    rospy.Subscriber("index_tip_relq",Float64MultiArray,app.callback_index_relq)
 
     memorized_x = 0
     memorized_y = 0
@@ -283,13 +280,11 @@ if __name__ == '__main__':
             base_offset_y = app.base_tf_msg.transform.translation.y
             base_offset_z = app.base_tf_msg.transform.translation.z
 
-            v_bi_w_quat = Quaternion(0, app.index_tip.data[0], app.index_tip.data[1], app.index_tip.data[2])
-            v_rotated_quat = app.Q_rot_wg * v_bi_w_quat * app.Q_rot_wg.inverse
-            rot_rel_index = v_rotated_quat.normalised
+            
             Q_tracker = Quaternion(x = tracker_current.transform.rotation.x,y = tracker_current.transform.rotation.y, z = tracker_current.transform.rotation.z,
                                    w = tracker_current.transform.rotation.w)
-            rot_index = Q_tracker*rot_rel_index
-            
+            rot_index = Q_tracker*app.rel_base_index
+
             #alignement 
             # last_rotation_x=tracker_current.transform.rotation.x
             # last_rotation_y=tracker_current.transform.rotation.y
@@ -300,6 +295,8 @@ if __name__ == '__main__':
             last_rotation_y = rot_index.y
             last_rotation_z = rot_index.z
             last_rotation_w = rot_index.w
+
+            
 
         if app.flag == True:
             
@@ -354,12 +351,12 @@ if __name__ == '__main__':
                 rtw=quaternion.w
 
                 #index tracking
-                v_bi_w_quat = Quaternion(0, app.index_tip.data[0], app.index_tip.data[1], app.index_tip.data[2])
-                v_rotated_quat = app.Q_rot_wg * v_bi_w_quat * app.Q_rot_wg.inverse
-                rot_rel_index = v_rotated_quat.normalised
                 Q_tracker = Quaternion(x = tracker_current.transform.rotation.x,y = tracker_current.transform.rotation.y, z = tracker_current.transform.rotation.z,
                                     w = tracker_current.transform.rotation.w)
-                rot_index = Q_tracker*rot_rel_index
+                
+
+                
+                rot_index = Q_tracker*app.rel_base_index
 
                 rtx,rty,rtz,rtw = app.relative_rotation(wc=last_rotation_w,xc=last_rotation_x,yc=last_rotation_y,zc=last_rotation_z,
                                                     xcnew=rot_index.x,ycnew=rot_index.y,zcnew=rot_index.z,wcnew=rot_index.w)
@@ -379,11 +376,24 @@ if __name__ == '__main__':
             tracker_current.transform.rotation.z = memorized_rtz
             tracker_current.transform.rotation.w = memorized_rtw
 
+           
+
         previous_flag =  app.flag
 
         if app.bool_dist_real==True:
             reset=True
 
+        Q_raw =  Quaternion(x = tracker_current_raw_data.transform.rotation.x,y = tracker_current_raw_data.transform.rotation.y, 
+                                z = tracker_current_raw_data.transform.rotation.z,w = tracker_current_raw_data.transform.rotation.w)
+        Q_raw *=app.rel_base_index 
+
+        tracker_current_raw_data.transform.rotation.x = Q_raw.x
+        tracker_current_raw_data.transform.rotation.y = Q_raw.y
+        tracker_current_raw_data.transform.rotation.z = Q_raw.z
+        tracker_current_raw_data.transform.rotation.w = Q_raw.w
+        
+        # tracker_current_raw_data*=app.rel_base_index 
+         
         # Publish the Transform message
         app.pub.publish(app.transform_msg)
         app.pub_tracker_current_raw_data.publish(tracker_current_raw_data)

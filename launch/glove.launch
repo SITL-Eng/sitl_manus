@@ -1,0 +1,39 @@
+<launch>
+
+    <node name="glove_key_input" pkg="sitl_manus" type="key_input.py" output="screen">
+    </node>
+
+    <node name="processing_gloves" pkg="sitl_manus" type="processing_gloves.py" output="screen">
+    </node>
+
+    <node name="gloves_reading" pkg="sitl_manus" type="gloves_reading.py" output="screen">
+    </node>
+    
+    <node name="processing_gloves_right" pkg="sitl_manus" type="processing_gloves_right.py" output="screen">
+    </node>
+
+    <node name="gloves_reading_right" pkg="sitl_manus" type="gloves_reading_right.py" output="screen">
+    </node>
+
+    <node name="gesture_recog_right" pkg="sitl_manus" type="gesture_recog_right.py" output="screen">
+    </node>
+    
+    <node name="gesture_recog" pkg="sitl_manus" type="gesture_recog.py" output="screen">
+    </node>
+
+    <node name="node_tracker" pkg="sitl_manus" type="node_tracker_test.py" output="screen">
+    </node>
+
+    <node name="pcl_workspace" pkg="sitl_manus" type="pcl_workspace_v2.py" output="screen">
+    </node>
+    
+    <node name="node_tracker_r" pkg="sitl_manus" type="node_tracker_right.py" output="screen">
+    </node>
+
+    <node name="pcl_workspace_r" pkg="sitl_manus" type="pcl_workspace_v2_right.py" output="screen">
+    </node>
+
+    <?ignore
+
+    ?>
+</launch>

@@ -17,9 +17,8 @@ class workspace():
 
     def __init__(self):
         
-        rospy.init_node('cube_point_cloud_publisher')
-        # Specify the filename
-        self.filename_min_max = "/home/phd-leonardo-sitl/Desktop/PhdLeo/dataset_glove/min_max/min_max.txt"
+        rospy.init_node('cube_point_cloud_publisher_r')
+        
         self.min_val_old = [0, 0, 0]
         self.max_val_old = [0,0,0]
 
@@ -38,13 +37,13 @@ class workspace():
         self.rw = None
 
         # Create a publisher
-        self.pub = rospy.Publisher('glove_workspace_tf', TransformStamped, queue_size=10)
+        self.pub = rospy.Publisher('glove_workspace_tf_r', TransformStamped, queue_size=10)
         self.R = rospy.Rate(100)
 
         self.br = tf.TransformBroadcaster()        
         self.base_gloveinput = TransformStamped()
-        self.base_gloveinput.child_frame_id = "psm2_base_flipped"
-        self.base_gloveinput.header.frame_id = "psm2_base"
+        self.base_gloveinput.child_frame_id = "psm1_base_flipped"
+        self.base_gloveinput.header.frame_id = "psm1_base"
 
         self.base_gloveinput.transform.translation.x = 0       
         self.base_gloveinput.transform.translation.y = 0
@@ -57,9 +56,8 @@ class workspace():
 
         self.br = tf.TransformBroadcaster()        
         self.input = TransformStamped()
-        self.input.child_frame_id = "next_translation"
-        self.input.header.frame_id = "psm2_base_flipped"
-
+        self.input.child_frame_id = "next_translation_r"
+        self.input.header.frame_id = "psm1_base_flipped"
 
         self.input.transform.rotation.x = 0.5
         self.input.transform.rotation.y = -0.5
@@ -77,9 +75,6 @@ class workspace():
         self.max_val = None
         self.cloud = None
     
-        
-
-
     def pt_array_3d_to_pcl(self,pt_array_3d,color=(255,0,0)):
         data = np.zeros(
             pt_array_3d.shape[0],
@@ -105,7 +100,7 @@ class workspace():
 
     def create_cube_point_cloud(self):
 
-        psm2_cp = rospy.wait_for_message("/PSM2/custom/local/setpoint_cp",PoseStamped)
+        psm2_cp = rospy.wait_for_message("/PSM1/custom/local/setpoint_cp",PoseStamped)
 
         # Define the size of the cube
         cube_size = 0.07 
@@ -133,81 +128,40 @@ class workspace():
 
         points = np.array(points)
         xyzrgb = self.pt_array_3d_to_pcl(points)
-        cube_pcl = point_cloud2.array_to_pointcloud2(xyzrgb,frame_id="psm2_base")
+        cube_pcl = point_cloud2.array_to_pointcloud2(xyzrgb,frame_id="psm1_base")
 
         return cube_pcl
 
-
-    
-
-
-    # def rescale_value(self,original_value, min_old, max_old,min_new,max_new):
-
-            
-
-    #         rescaled_value = ((float(original_value) - min_old) * (max_new - min_new)) / (max_old - min_old) + min_new
-
-    #         # if rescaled_value > max_new:
-    #         #     rescaled_value = max_new
-
-    #         # elif rescaled_value < min_new:
-    #         #     rescaled_value = min_new
-
-    #         return rescaled_value
 
     def rescale_value(self, original_values, min_old_values, max_old_values, min_new_values, max_new_values):
         rescaled_values = []
         for i in range(len(original_values)):
             rescaled_value = ((float(original_values[i]) - min_old_values[i]) * (max_new_values[i] - min_new_values[i])) / (max_old_values[i] - min_old_values[i]) + min_new_values[i]
             rescaled_values.append(rescaled_value)
-        # print("original ",original_values,"rescaled ",rescaled_values)
 
         return rescaled_values
     
+
     def callback(self,tracker):
         
         
         self.x = tracker.transform.translation.x
         self.y = tracker.transform.translation.y
         self.z = tracker.transform.translation.z
+
         self.rx = tracker.transform.rotation.x
         self.ry = tracker.transform.rotation.y
         self.rz = tracker.transform.rotation.z
         self.rw = tracker.transform.rotation.w
-    
-    # def callback_workspace(self, init_pos):
-    #     if init_pos is not None:
 
-    #         #IF YOU CHANGE THIS VALUE CHANGE IT ALSO IN NODE_TRACKER.PY
-    #         size_hand_workspace = 0.25 
-
-    #         #IF THE HAND STARTS ON THE TABLE
-    #         # self.min_val_old[0] = init_pos.x#-size_hand_workspace
-    #         # self.max_val_old[0] = init_pos.x+2*size_hand_workspace
-
-    #         self.min_val_old[0] = init_pos.transform.translation.x-size_hand_workspace
-    #         self.max_val_old[0] = init_pos.transform.translation.x+size_hand_workspace
-
-    #         self.min_val_old[1] = init_pos.transform.translation.y-size_hand_workspace
-    #         self.max_val_old[1] = init_pos.transform.translation.y+size_hand_workspace
-
-    #         self.min_val_old[2] = init_pos.transform.translation.z-size_hand_workspace
-    #         self.max_val_old[2] = init_pos.transform.translation.z+size_hand_workspace
-            
-    #     else: 
-    #         pass
         
     def get_min_max(self):
         while not rospy.is_shutdown():
-            init_pos = rospy.wait_for_message('tracker_current_pos_tf',TransformStamped)
+            init_pos = rospy.wait_for_message('tracker_current_pos_tf_r',TransformStamped)
             if init_pos is not None:
 
                 #IF YOU CHANGE THIS VALUE CHANGE IT ALSO IN NODE_TRACKER.PY
                 size_hand_workspace = 0.15
-
-                #IF THE HAND STARTS ON THE TABLE
-                # self.min_val_old[0] = init_pos.x#-size_hand_workspace
-                # self.max_val_old[0] = init_pos.x+2*size_hand_workspace
 
                 self.min_val_old[0] = init_pos.transform.translation.x-size_hand_workspace
                 self.max_val_old[0] = init_pos.transform.translation.x+size_hand_workspace
@@ -219,6 +173,7 @@ class workspace():
                 self.max_val_old[2] = init_pos.transform.translation.z+size_hand_workspace
                 break
         
+
     def exctracting_boundaries(self):
 
         min_x = min_y = min_z = float('inf')
@@ -232,85 +187,62 @@ class workspace():
             max_x = max(max_x, x)
             max_y = max(max_y, y)
             max_z = max(max_z, z)
+
         min_val=[min_x,min_y,min_z]
         max_val=[max_x,max_y,max_z]
         
         return min_val,max_val
 
+
     def rotate_quat(self,w,x,y,z,qw,qx,qy,qz):
-           
             original_quat = Quaternion(w=w, x=x, y=y, z=z)
             rotation_quat = Quaternion(w=qw, x=qx, y=qy, z=qz)
             resulting_quat = (original_quat * rotation_quat).normalised 
            
             return resulting_quat.x, resulting_quat.y, resulting_quat.z, resulting_quat.w
     
-    def callback_clutch(self,fist_bool):
 
+    def callback_clutch(self,fist_bool):
         self.flag = fist_bool.data
 
 
 def main():
-
     app=workspace()
     
-    pub = rospy.Publisher('/cube_point_cloud', PointCloud2, queue_size=10)
-    pub_tf = rospy.Publisher('/GLOVE_INPUT/T', TransformStamped, queue_size=10)
+    pub = rospy.Publisher('/cube_point_cloud_r', PointCloud2, queue_size=10)
+    pub_tf = rospy.Publisher('/GLOVE_INPUT/T_r', TransformStamped, queue_size=10)
 
     rate = rospy.Rate(100) 
     app.cloud = app.create_cube_point_cloud()
-
-    # rospy.Subscriber('vive_tracker_transform',TransformStamped,app.callback)
-    rospy.Subscriber('tracker_current_pos_tf',TransformStamped,app.callback)
-    # rospy.Subscriber('base_tracker',TransformStamped,app.callback_workspace)
+    rospy.Subscriber('tracker_current_pos_tf_r',TransformStamped,app.callback)
     rospy.Subscriber("glove/left/fist", BoolStamped, app.callback_clutch)
 
     app.points = list(pc2.read_points(app.cloud, field_names=("x", "y", "z"), skip_nans=True))
-    # print("number of points cube:", len(app.points))
     app.min_val,app.max_val=app.exctracting_boundaries()
-    # print("boundaries exctracted", app.min_val, app.max_val)
+
     app.get_min_max()
 
     while not rospy.is_shutdown():
 
         t = rospy.Time.now()
 
-        # if app.flag == True:
-        #     app.cloud = app.create_cube_point_cloud()
-        #     app.points = list(pc2.read_points(app.cloud, field_names=("x", "y", "z"), skip_nans=True))
-        #     first_point = app.points[0]
-        #     last_point = app.points[-1]
-        #     app.min_val,app.max_val=app.exctracting_boundaries(first_point,last_point)
-
-        
         app.base_gloveinput.header.stamp = t
         app.input.header.stamp = t
 
         app.br.sendTransformMessage(app.base_gloveinput)
 
         try:
-            
-            # print(app.min_val_old[0],app.max_val_old[0],app.min_val[0],app.max_val[0])
-            # x= app.rescale_value(app.x,app.min_val_old[0],app.max_val_old[0],app.min_val[0],app.max_val[0])
-            # y= app.rescale_value(app.y,app.min_val_old[1],app.max_val_old[1],app.min_val[1],app.max_val[1])  #these values needs to be coherent with below: x=0 
-            # z= app.rescale_value(app.z,app.min_val_old[2],app.max_val_old[2],app.min_val[2],app.max_val[2])
-
             coord = [app.x, app.y, app.z]
+
             temp = "\nmin hand  {} \nmax hand  {} \nmin robot {} \nmax robot {}".format(
                 app.min_val_old, app.max_val_old, app.min_val, app.max_val
             )
-
-
-            # Open the file in write mode and save the string
-            with open(app.filename_min_max, "w") as file:
-                file.write(temp)
-
 
             rospy.loginfo_once(temp)
             x, y, z = app.rescale_value(coord, app.min_val_old, app.max_val_old, app.min_val, app.max_val)
             
             app.input.transform.translation.x = x  
-            app.input.transform.translation.y = y  
+            app.input.transform.translation.y = y  #this because left become right, right become left
             app.input.transform.translation.z = z  
             
             app.br.sendTransformMessage(app.input)

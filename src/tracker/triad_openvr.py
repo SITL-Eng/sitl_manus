@@ -3,6 +3,9 @@ import sys
 import openvr
 import math
 import json
+from scipy.spatial.transform import Rotation as R
+import numpy as np
+
 
 from functools import lru_cache
 
@@ -23,16 +26,24 @@ def convert_to_euler(pose_mat):
 
 #Convert the standard 3x4 position/rotation matrix to a x,y,z location and the appropriate Quaternion
 def convert_to_quaternion(pose_mat):
+    r = R.from_matrix(
+        [[pose_mat[0][0], pose_mat[0][1], pose_mat[0][2]],
+         [pose_mat[1][0], pose_mat[1][1], pose_mat[1][2]],
+         [pose_mat[2][0], pose_mat[2][1], pose_mat[2][2]]]
+    )
+    r_quat = r.as_quat()
+
     # Per issue #2, adding a abs() so that sqrt only results in real numbers
-    r_w = math.sqrt(abs(1+pose_mat[0][0]+pose_mat[1][1]+pose_mat[2][2]))/2
-    r_x = (pose_mat[2][1]-pose_mat[1][2])/(4*r_w)
-    r_y = (pose_mat[0][2]-pose_mat[2][0])/(4*r_w)
-    r_z = (pose_mat[1][0]-pose_mat[0][1])/(4*r_w)
+    # r_w = math.sqrt(abs(1+pose_mat[0][0]+pose_mat[1][1]+pose_mat[2][2]))/2
+    # r_x = (pose_mat[2][1]-pose_mat[1][2])/(4*r_w)
+    # r_y = (pose_mat[0][2]-pose_mat[2][0])/(4*r_w)
+    # r_z = (pose_mat[1][0]-pose_mat[0][1])/(4*r_w)
 
     x = pose_mat[0][3]
     y = pose_mat[1][3]
     z = pose_mat[2][3]
-    return [x,y,z,r_w,r_x,r_y,r_z]
+    # return [x,y,z,r_w,r_x,r_y,r_z]
+    return [x,y,z,r_quat[3], r_quat[0], r_quat[1], r_quat[2]]
 
 #Define a class to make it easy to append pose matricies and convert to both Euler and Quaternion for plotting
 class pose_sample_buffer():

@@ -5,7 +5,7 @@ A ROS package for hand tracking and gesture recognition using Manus gloves and V
 
 ## Publications
 
-by  Leonardo Borgioli, Ki-Hwan Oh,, Alberto Mangano, Valentina Valle, Marco Di Pangrazio, Francesco Toti, Gioia Pozza, Luciano Ambrosini, Alvaro Ducas, Miloš Žefran, Liaohai Chen, Pier Cristoforo Giulianotti  
+by  Borgioli, L., Oh, K-H., Valle, V., Ducas, A., Halloum, M., Mendoza Medina, D. F., Sharifi, A., López, P. A., Cassiani, J., Žefran, M., *et al.* (ICRA 2025)
 
 [![arXiv](https://img.shields.io/badge/arXiv-Paper-red?logo=arxiv)](https://arxiv.org/pdf/2403.13941)  
 ## Overview
@@ -162,10 +162,10 @@ This will show:
 This project is licensed under the MIT License - see the LICENSE file for details.
 
 ## Acknowledgments
+If you find this repository useful please cite our work!
 
-- VIVE tracking system
-- Manus glove technology
-- ROS community
+> **Sensory Glove-Based Surgical Robot User Interface**  
+> Borgioli, L., Oh, K-H., Valle, V., Ducas, A., Halloum, M., Mendoza Medina, D. F., Sharifi, A., López, P. A., Cassiani, J., Žefran, M., *et al.* (ICRA 2025)
 
 ## Contact
 

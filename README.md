@@ -1,82 +1,166 @@
 # sitl_manus
-# Comprehensive Robotic Cholecystectomy Dataset (CRCD)
 
-The **Comprehensive Robotic Cholecystectomy Dataset (CRCD)** is a large-scale, publicly available dataset for **robot-assisted surgery (RAS) research**.  
-It provides synchronized **endoscopic videos, da Vinci surgical robot kinematics, and pedal usage signals**, making it one of the most comprehensive multimodal resources for studying **robotic cholecystectomy procedures**.  
+A ROS package for hand tracking and gesture recognition using Manus gloves and VIVE trackers for robotic surgery applications.
 
-CRCD is designed to support research in:
-- **Controls in RAS**
-- **Computer vision for RAS**
-- **Surgical workflow analysis and phase recognition**
-- **AI and machine learning in healthcare**
-- **Skill assessment and surgical training**
+## Overview
 
-By integrating visual, kinematic, and control data, CRCD enables work on **instrument tracking, tissue segmentation, activity recognition, and predictive surgical models.**
+This package provides real-time hand tracking capabilities by integrating:
+- **Manus gloves** for finger joint tracking and gesture recognition
+- **VIVE trackers** for 6DOF hand position and orientation tracking
+- **Point cloud workspace** visualization for surgical robot interaction
+- **ROS integration** for seamless robotic system communication
 
----
+## Features
 
-## Publications
+- **Multi-hand tracking**: Support for both left and right hand tracking
+- **Gesture recognition**: Machine learning-based gesture classification (fist, pinch, etc.)
+- **Workspace mapping**: Real-time mapping of hand workspace to robot workspace
+- **Clutch functionality**: Hand tracking enable/disable control
+- **Point cloud visualization**: 3D workspace representation in RVIZ
 
-by Ki-Hwan Oh, Leonardo Borgioli, Alberto Mangano, Valentina Valle, Marco Di Pangrazio, Francesco Toti, Gioia Pozza, Luciano Ambrosini, Alvaro Ducas, Miloš Žefran, Liaohai Chen, Pier Cristoforo Giulianotti  
+## Package Structure
 
-[![arXiv](https://img.shields.io/badge/arXiv-Paper-red?logo=arxiv)](https://arxiv.org/abs/2312.01183)  [![IEEE](https://img.shields.io/badge/IEEE-Paper-blue?logo=ieee)](https://ieeexplore.ieee.org/abstract/document/10585836)  [![BibTeX](https://img.shields.io/badge/BibTeX-Citation-orange?logo=bibtex)](https://uofi.box.com/s/0cxpk70we719hxcqsdn3bx05lw9yfsth)  [![Hugging Face](https://img.shields.io/badge/HuggingFace-Dataset-yellow?logo=huggingface)](https://huggingface.co/datasets/SITL-Eng/CRCD)
-
-### Updates
-Expanded version of CRCD published in **Journal of Medical Robotics Research (JMRR):**  
-
-[![arXiv](https://img.shields.io/badge/arXiv-Paper-red?logo=arxiv)](https://arxiv.org/abs/2412.12238#)  [![JMRR](https://img.shields.io/badge/JMRR-World%20Scientific-blue)](https://doi.org/10.1142/S2424905X25500060)
-
----
-
-## Dataset Contents
-
-- **Raw Dataset**  
-  Includes **endoscopic videos**, **da Vinci kinematics**, and **console pedal usage**.  
-  [Download Link](https://uofi.box.com/s/p3aocj6yzq4ctwc0s635a2dfyk9zdv5j)
-
-- **Annotated Dataset**  
-  Contains annotated frames with **tissue segmentation** and **instrument keypoints**.  
-  [Download Link](https://uofi.box.com/s/f9bg69ve6fkwktr3o33ahmp620w8jth6)
-
-- **Additional Information**  
-  Provides **stereo endoscopic camera calibrations** and **background info of each surgeon**.  
-  [Download Link](https://uofi.box.com/s/w65rui5ylm0i4v4jvlkpacpi4q6jkdpe)
-
-- **Synchronized Dataset**  
-  Contains synchronized **endoscopic videos**, **da Vinci kinematics**, and **console pedal usage**.
-  [![Hugging Face](https://img.shields.io/badge/HuggingFace-Dataset-yellow?logo=huggingface)](https://huggingface.co/datasets/SITL-Eng/CRCD)
-
----
-
-## Tutorials
-
-Example usage and tutorials are available in the [notebooks/](notebooks/) folder:  
-- Loading and preprocessing CRCD data  
-- Running segmentation and instrument tracking  
-- Using kinematic and pedal signals for workflow analysis  
-
----
-
-## Citation
-
-If you use CRCD in your research, please cite:
-
-```bibtex
-@INPROCEEDINGS{koh2024crcd,
-  author={Oh, Ki-Hwan and Borgioli, Leonardo and Mangano, Alberto and Valle, Valentina and Di Pangrazio, Marco and Toti, Francesco and Pozza, Gioia and Ambrosini, Luciano and Ducas, Alvaro and Žefran, Miloš and Chen, Liaohai and Giulianotti, Pier Cristoforo},
-  booktitle={2024 International Symposium on Medical Robotics (ISMR)}, 
-  title={Comprehensive Robotic Cholecystectomy Dataset (CRCD): Integrating Kinematics, Pedal Signals, and Endoscopic Videos}, 
-  year={2024},
-  pages={1-7},
-  keywords={Medical robotics;Automation;Robot vision systems;Liver;Kinematics;Predictive models;Cameras},
-  doi={10.1109/ISMR63436.2024.10585836}
-}
-
-@article{doi:10.1142/S2424905X25500060,
-  author = {Oh, Ki-Hwan and Borgioli, Leonardo and Mangano, Alberto and Valle, Valentina and Pangrazio, Marco Di and Toti, Francesco and Pozza, Gioia and Ambrosini, Luciano and Ducas, Alvaro and \v{Z}efran, Milo\v{s} and Chen, Liaohai and Giulianotti, Pier Cristoforo},
-  title = {Expanded Comprehensive Robotic Cholecystectomy Dataset},
-  journal = {Journal of Medical Robotics Research},
-  doi = {10.1142/S2424905X25500060},
-  URL = {https://doi.org/10.1142/S2424905X25500060}
-}
 ```
+├── scripts/                    # Main Python scripts
+│   ├── gesture_recog*.py      # Gesture recognition nodes
+│   ├── gloves_reading*.py     # Manus glove data processing
+│   ├── node_tracker*.py       # VIVE tracker processing
+│   ├── pcl_workspace*.py      # Point cloud workspace generation
+│   ├── processing_gloves*.py  # Glove data preprocessing
+│   └── recording*.py          # Data recording utilities
+├── src/                       # Source code
+│   ├── nodes/                 # Additional ROS nodes
+│   └── tracker/               # VIVE tracker utilities
+├── launch/                    # Launch files
+├── msg/                       # Custom message definitions
+├── rviz/                      # RVIZ configuration
+└── README.md
+```
+
+## Dependencies
+
+- ROS (tested with ROS Melodic/Noetic)
+- Python 3
+- OpenVR/SteamVR for VIVE tracker support
+- Manus Core SDK
+- Required Python packages:
+  - `numpy`
+  - `pandas`
+  - `scipy`
+  - `pyquaternion`
+  - `scikit-learn`
+  - `joblib`
+
+## Installation
+
+1. Clone this repository into your catkin workspace:
+```bash
+cd ~/catkin_ws/src
+git clone <repository_url> sitl_manus
+```
+
+2. Install dependencies:
+```bash
+rosdep install --from-paths . --ignore-src -r -y
+```
+
+3. Build the package:
+```bash
+cd ~/catkin_ws
+catkin_make
+source devel/setup.bash
+```
+
+## Usage
+
+### Basic Launch
+Launch the complete hand tracking system:
+```bash
+roslaunch sitl_manus glove.launch
+```
+
+### Individual Components
+
+1. **Hand tracking only**:
+```bash
+rosrun sitl_manus node_tracker.py          # Left hand
+rosrun sitl_manus node_tracker_right.py    # Right hand
+```
+
+2. **Gesture recognition**:
+```bash
+rosrun sitl_manus gesture_recog.py         # Left hand gestures
+rosrun sitl_manus gesture_recog_right.py   # Right hand gestures
+```
+
+3. **Workspace visualization**:
+```bash
+rosrun sitl_manus pcl_workspace_v2.py      # Left hand workspace
+rosrun sitl_manus pcl_workspace_v2_right.py # Right hand workspace
+```
+
+### Key Controls
+- **'s'**: Enable hand tracking
+- **'e'**: Disable hand tracking
+
+## Topics
+
+### Published Topics
+- `/tracker_current_pos_tf` - Current tracker pose
+- `/manus/pcl` - Point cloud from left hand
+- `/manus/pcl_right` - Point cloud from right hand  
+- `/glove/left/fist` - Fist gesture detection
+- `/cube_point_cloud` - Workspace point cloud
+
+### Subscribed Topics
+- `/manus/cp` - Left hand glove data
+- `/manus/cp_right` - Right hand glove data
+- `/glove/left/on_off` - Hand tracking enable/disable
+
+## Configuration
+
+### Tracker Setup
+1. Ensure VIVE trackers are properly calibrated
+2. Update tracker device IDs in the node tracker scripts:
+   - `tracker_1` for left hand
+   - `tracker_2` for right hand
+
+### Workspace Calibration
+Modify workspace boundaries in [`pcl_workspace_v2.py`](scripts/pcl_workspace_v2.py):
+```python
+size_hand_workspace = 0.25  # Adjust workspace size
+```
+
+## Visualization
+
+Launch RVIZ with the provided configuration:
+```bash
+rviz -d rviz/glove.rviz
+```
+
+This will show:
+- Hand tracker poses
+- Workspace point clouds
+- Robot coordinate frames
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Commit your changes
+4. Push to the branch
+5. Create a Pull Request
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Acknowledgments
+
+- VIVE tracking system
+- Manus glove technology
+- ROS community
+
+## Contact
+
+For questions or support, please contact the SITL lab.

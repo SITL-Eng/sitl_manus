@@ -7,8 +7,7 @@ A ROS package for hand tracking and gesture recognition using Manus gloves and V
 
 by  Leonardo Borgioli, Ki-Hwan Oh,, Alberto Mangano, Valentina Valle, Marco Di Pangrazio, Francesco Toti, Gioia Pozza, Luciano Ambrosini, Alvaro Ducas, Miloš Žefran, Liaohai Chen, Pier Cristoforo Giulianotti  
 
-[![arXiv](https://img.shields.io/badge/arXiv-Paper-red?logo=arxiv)](https://arxiv.org/pdf/2403.13941)  [![IEEE](https://img.shields.io/badge/IEEE-Paper-blue?logo=ieee)](https://ieeexplore.ieee.org/abstract/document/10585836)  [![BibTeX](https://img.shields.io/badge/BibTeX-Citation-orange?logo=bibtex)](https://uofi.box.com/s/0cxpk70we719hxcqsdn3bx05lw9yfsth) 
-
+[![arXiv](https://img.shields.io/badge/arXiv-Paper-red?logo=arxiv)](https://arxiv.org/pdf/2403.13941)  
 ## Overview
 
 This package provides real-time hand tracking capabilities by integrating:

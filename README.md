@@ -1,6 +1,6 @@
 # sitl_manus
 
-A ROS package for hand tracking and gesture recognition using Manus gloves and VIVE trackers for robotic surgery applications
+A ROS package for hand tracking and gesture recognition using Manus gloves and VIVE trackers for robotic surgery applications,
 ![System diagram](Slide1.jpg)
 
 ## Publications
